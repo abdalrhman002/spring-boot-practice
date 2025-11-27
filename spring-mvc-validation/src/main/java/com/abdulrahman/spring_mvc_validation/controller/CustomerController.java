@@ -32,8 +32,11 @@ public class CustomerController {
     @PostMapping("/processForm")
     public String processForm(@Valid @ModelAttribute("customer") Customer customer,
                               BindingResult bindingResult){
-
+        // those prints are for debugging
         System.out.println("last name: "+"|"+customer.getLastName()+"|");
+
+        System.out.println("Binding result: "+bindingResult.toString());
+
         if (bindingResult.hasErrors()){
             return "customer-form";
         }
