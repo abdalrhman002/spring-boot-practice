@@ -1,5 +1,6 @@
 package com.abdulrahman.spring_mvc_validation.model;
 
+import com.abdulrahman.spring_mvc_validation.validation.CourseCode;
 import jakarta.validation.constraints.*;
 
 public class Customer {
@@ -10,13 +11,26 @@ public class Customer {
     @Size(min = 1, message = "is required")
     private String lastName;
 
-    @NotNull(message = "is required")
+//    @NotNull(message = "is required")
     @Min(value = 1, message = "Age must be more than of equal one.")
     @Max(value = 120, message = "You lived too much.")
     private Integer age;
 
     @Pattern(regexp = "^[a-zA-Z0-9]{5}", message = "Postal ode can be only 5 chars/digits.")
     private String postalCode;
+
+
+//    @NotNull(message = "is required")
+    @CourseCode(value = "IT", message = "course code must start with \"IT\"")
+    private String courseCode;
+
+    public String getCourseCode() {
+        return courseCode;
+    }
+
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
 
     public @Pattern(regexp = "^[a-zA-Z0-9]{5}", message = "Postal ode can be only 5 chars/digits.") String getPostalCode() {
         return postalCode;
