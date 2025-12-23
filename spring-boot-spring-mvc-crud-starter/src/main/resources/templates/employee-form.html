@@ -14,6 +14,8 @@
     <b class="h4 mb-4">Save Employee</b>
     <form action="#" th:action="@{/employees/save}"
                     th:object="${employee}" method="post">
+
+        <input type="hidden" th:field="*{id}">
         <input type="text" th:field="*{firstName}"
                placeholder="First Name" class="mb-4 w-25 form-control">
         <input type="text" th:field="*{lastName}"
