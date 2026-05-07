@@ -11,12 +11,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
-@Profile("!production")
-public class SecurityConfig {
+@Profile("production")
+public class SecurityProductionConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> requests
+        http.redirectToHttps(withDefaults())
+                .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/register").permitAll()
                 .anyRequest().authenticated());
         http.csrf(csrfConfig -> csrfConfig.disable());
