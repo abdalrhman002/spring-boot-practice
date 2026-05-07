@@ -1,4 +1,4 @@
-package com.am9.spring_security_lab.config;
+package com.am9.spring_security_lab.security;
 
 import com.am9.spring_security_lab.entity.Customer;
 import com.am9.spring_security_lab.repository.CustomerRepository;
