@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -21,14 +22,19 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
+        CsrfTokenRequestAttributeHandler csrfHandler = new CsrfTokenRequestAttributeHandler();
+
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
         );
         http.authorizeHttpRequests((requests) -> requests
-//                .requestMatchers("/register").permitAll()
+                .requestMatchers("/register").permitAll()
                 .anyRequest().authenticated());
         http.csrf(csrfConfig -> csrfConfig
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRequestHandler(csrfHandler)
+                .ignoringRequestMatchers("/register"));
+
         http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
