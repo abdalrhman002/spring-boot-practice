@@ -4,9 +4,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Base64;
 
 public class TempEmailFilter extends OncePerRequestFilter {
     @Override
@@ -30,7 +32,19 @@ public class TempEmailFilter extends OncePerRequestFilter {
     }
 
     private String extractEmail(HttpServletRequest request) {
-        // To do
-        return "";
+        // Form log in
+        if ("POST".equalsIgnoreCase(request.getMethod())
+                && "/login".equals(request.getServletPath())) {
+            return request.getParameter("username");
+        }
+
+        // Basic Auth
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader != null && authHeader.startsWith("Basic ")){
+            String base64Credential = authHeader.substring(6);
+            String decoded = new String(Base64.getDecoder().decode(base64Credential));
+            return decoded.split(":")[0];
+        }
+        return null;
     }
 }
