@@ -1,6 +1,7 @@
 package com.am9.spring_security_lab.config;
 
 import com.am9.spring_security_lab.filter.CsrfCookieFilter;
+import com.am9.spring_security_lab.filter.JwtTokenGenerationFilter;
 import com.am9.spring_security_lab.filter.TempEmailFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,7 @@ public class SecurityConfig {
         CsrfTokenRequestAttributeHandler csrfHandler = new CsrfTokenRequestAttributeHandler();
 
         http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/register").permitAll()
@@ -37,8 +38,10 @@ public class SecurityConfig {
                 .csrfTokenRequestHandler(csrfHandler)
                 .ignoringRequestMatchers("/register"));
 
-        http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                        .addFilterBefore(new TempEmailFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
+        http.addFilterBefore(new TempEmailFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(new JwtTokenGenerationFilter(), BasicAuthenticationFilter.class);
+        //http.addFilterBefore(new JwtTokenValidationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
