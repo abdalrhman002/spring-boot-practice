@@ -20,30 +20,34 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 public class JwtTokenGenerationFilter extends OncePerRequestFilter {
+
+    private final SecretKey secretKey;
+
+    public JwtTokenGenerationFilter(Environment env){
+        String key = env.getProperty(AppConstants.JWT_SECRET_KEY,
+                AppConstants.DEFAULT_JWT_SECRET_KEY);
+        this.secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null){
-            Environment env = getEnvironment();
-            if (env != null){
-                String key = env.getProperty(AppConstants.JWT_SECRET_KEY,
-                        AppConstants.DEFAULT_JWT_SECRET_KEY);
-                Long expTime = AppConstants.DEFAULT_JWT_EXP_TIME;
-                SecretKey secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
-                Date now = new Date();
-                String jwt = Jwts.builder().issuer("SecLab")
-                        .subject("JWT Token")
-                        .claim("username", authentication.getName())
-                        .claim("authorities", authentication.getAuthorities()
-                                .stream().map(GrantedAuthority::getAuthority)
-                                .collect(Collectors.joining(",")))
-                        .issuedAt(now)
-                        .expiration(new Date(now.getTime() + expTime))
-                        .signWith(secretKey)
-                        .compact();
-                response.setHeader(AppConstants.JWT_HEADER, jwt);
-            }
+        if (authentication != null) {
+            Long expTime = AppConstants.DEFAULT_JWT_EXP_TIME;
+            Date now = new Date();
+            String jwt = Jwts.builder().issuer("SecLab")
+                    .subject("JWT Token")
+                    .claim("username", authentication.getName())
+                    .claim("authorities", authentication.getAuthorities()
+                            .stream().map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.joining(",")))
+                    .issuedAt(now)
+                    .expiration(new Date(now.getTime() + expTime))
+                    .signWith(secretKey)
+                    .compact();
+            response.setHeader(AppConstants.JWT_HEADER, jwt);
         }
         filterChain.doFilter(request, response);
     }

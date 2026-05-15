@@ -6,6 +6,7 @@ import com.am9.spring_security_lab.filter.TempEmailFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -21,6 +22,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @Profile("!production")
 public class SecurityConfig {
+
+    private final Environment env;
+
+    public SecurityConfig(Environment env) {
+        this.env = env;
+    }
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -40,7 +47,7 @@ public class SecurityConfig {
 
         http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
         http.addFilterBefore(new TempEmailFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterAfter(new JwtTokenGenerationFilter(), BasicAuthenticationFilter.class);
+        http.addFilterAfter(new JwtTokenGenerationFilter(env), BasicAuthenticationFilter.class);
         //http.addFilterBefore(new JwtTokenValidationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.formLogin(withDefaults());
