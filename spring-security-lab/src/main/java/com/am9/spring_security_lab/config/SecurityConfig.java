@@ -2,6 +2,7 @@ package com.am9.spring_security_lab.config;
 
 import com.am9.spring_security_lab.filter.CsrfCookieFilter;
 import com.am9.spring_security_lab.filter.JwtTokenGenerationFilter;
+import com.am9.spring_security_lab.filter.JwtTokenValidationFilter;
 import com.am9.spring_security_lab.filter.TempEmailFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +49,7 @@ public class SecurityConfig {
         http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
         http.addFilterBefore(new TempEmailFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(new JwtTokenGenerationFilter(env), BasicAuthenticationFilter.class);
-        //http.addFilterBefore(new JwtTokenValidationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtTokenValidationFilter(env), UsernamePasswordAuthenticationFilter.class);
 
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
